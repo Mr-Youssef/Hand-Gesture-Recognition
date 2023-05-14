@@ -53,7 +53,7 @@ def saving_csv(features, labels, name):
     labels_pd = pd.Series(labels)
     data_df = pd.concat([features_pd, labels_pd], axis=1)  
     data_df.columns = ['features', 'labels']
-    data_df.to_csv(f'Datasets/TwoFeatures/{name}.csv', index=False)
+    data_df.to_csv(f'Datasets/{name}.csv', index=False)
 
 
 # In[ ]:
@@ -68,14 +68,25 @@ def feature_extraction(imgs_edges, labels, name):
     return all_features
 
 
-# In[6]:
+# In[ ]:
+
+
+def feature_extraction_deployment(imgs_edges):
+    all_features = []
+    for edge in imgs_edges:
+        features= EOH(edge)
+        all_features.append(features)
+    return all_features
+
+
+# In[1]:
 
 
 def create_py():
     get_ipython().system('jupyter nbconvert --to script feature_extraction_utils.ipynb')
 
 
-# In[7]:
+# In[2]:
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# #### All Imports
+# #### **All Imports**
 
 # In[ ]:
 
@@ -9,7 +9,7 @@
 get_ipython().system('pip install gdown')
 
 
-# In[7]:
+# In[6]:
 
 
 import gdown
@@ -22,9 +22,9 @@ from sklearn.model_selection import train_test_split
 import random
 
 
-# #### importing data from google drive
+# #### **Importing data from google drive**
 
-# In[ ]:
+# In[7]:
 
 
 def read_from_drive():
@@ -35,9 +35,18 @@ def read_from_drive():
     zip_ref.close()
 
 
-# #### making sure all images have the same extension
+# ### **Importing data from a folder on your computer**
 
 # In[8]:
+
+
+def read_from_folder(folder_path):
+    return folder_path
+
+
+# #### Making sure all images have the same extension
+
+# In[9]:
 
 
 def same_extension():
@@ -63,14 +72,14 @@ def same_extension():
 
 # #### Gathering all classes
 
-# In[9]:
+# In[10]:
 
 
-def gather_data():
-  women_dataset = '/content/dataset/Women'
-  men_dataset = '/content/dataset/men'
+def gather_data(folder_path):    #default folder path if importing from drive
+  women_dataset = folder_path + '/Women'
+  men_dataset = folder_path +'/men'
 
-  image_paths = []
+  images_paths = []
   # dataset_labels = []
   classes_sizes=[]
   corrupted=0
@@ -83,11 +92,10 @@ def gather_data():
     men_files = [os.path.join(men_folder_path, f) for f in os.listdir(men_folder_path) if os.path.isfile(os.path.join(men_folder_path, f))]
 
     imgs = women_files + men_files
-
-    if not img.endswith(".JPG"):          # in case of desktop.ini file or any other file
-        continue
-
     for img in imgs:
+      if not img.endswith(".JPG"):          # in case of desktop.ini file or any other file
+          continue
+
       try:
           temp = Image.open(img)
       except (IOError, SyntaxError) as e:   # in case of corrupted images
@@ -95,31 +103,36 @@ def gather_data():
           corrupted+=1
           continue 
       path = img.split('/')
-      image_paths.append(img)
+      images_paths.append(img)
       
-    classes_sizes.append(len(imgs))
-    print("Total number of images = ", len(image_paths))
-    print("Number of corrupted images or desktop.ini file = ", corrupted)
-    print("Number of images per class = ", classes_sizes)
-  return image_paths
+      
+    classes_sizes.append(len(imgs))    
+  print("Total number of images = ", len(images_paths))
+  print("Number of corrupted images  = ", corrupted)
+  print("Number of images per class = ", classes_sizes)
+  return images_paths
 
 
-# In[10]:
+# In[11]:
 
 
-def shuffle_and_get_labels(images_paths):
+def shuffle_and_get_labels(images_paths, input_type):
   random.seed(7)
   random.shuffle(images_paths)
   dataset_labels = []
   for img in images_paths:
-    path=img.split('/')
-    dataset_labels.append(path[4])
+    if input_type == 'drive':
+      path=img.split('/')
+      dataset_labels.append(path[4])
+    elif input_type == 'folder':
+      path=img.split('/')[-1].split('\\')
+      dataset_labels.append(path[1])
   return images_paths, dataset_labels
 
 
 # #### Splitting dataset into train and validation and test  (70%, 10%, 20%)
 
-# In[11]:
+# In[14]:
 
 
 def splitting(images_paths, dataset_labels):
@@ -130,36 +143,43 @@ def splitting(images_paths, dataset_labels):
     # splitting training into 70% and validation into 10%
     train_paths, validation_paths, train_labels, validation_labels = train_test_split(train_paths, train_labels, test_size=0.1, random_state=42, stratify=train_labels)
 
-    print(len(train_paths), len(validation_paths), len(test_paths))
+    print(f"Size of training data = {len(train_paths)}, Size of validation data = {len(validation_paths)}, Size of testing data = {len(test_paths)}")
 
     # check
     total = len(train_paths) + len(validation_paths) + len(test_paths)
-    print(total == len(images_paths))
+    if total == len(images_paths):
+        print("Splitting is done correctly")
+    else:  
+        print("Error in splitting")
     
     return train_paths, train_labels, validation_paths, validation_labels, test_paths, test_labels
 
 
-# In[12]:
+# In[20]:
 
 
-def input_data():
-    read_from_drive()
-    same_extension()
-    images_paths = gather_data()
-    images_paths, dataset_labels = shuffle_and_get_labels(images_paths)
+def input_data(input_type, folder_path = '/content/dataset'):
+    if input_type == 'drive':
+        read_from_drive()
+        same_extension()
+    elif input_type == 'folder':
+        pass 
+        
+    images_paths = gather_data(folder_path)
+    images_paths, dataset_labels = shuffle_and_get_labels(images_paths, input_type)
     train_images, train_labels, validation_images, validation_labels, test_paths, test_labels = splitting(images_paths, dataset_labels)
     
     return train_images, train_labels, validation_images, validation_labels, test_paths, test_labels
 
 
-# In[19]:
+# In[1]:
 
 
 def create_py():
     get_ipython().system('jupyter nbconvert --to script input_utils.ipynb')
 
 
-# In[20]:
+# In[2]:
 
 
 if __name__ == '__main__':
