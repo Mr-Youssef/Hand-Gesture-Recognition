@@ -3,7 +3,7 @@
 
 # ### All imports
 
-# In[ ]:
+# In[2]:
 
 
 import numpy as np
@@ -14,7 +14,7 @@ import cv2 as cv
 
 # ##### resizing -> grayscale -> normalization
 
-# In[ ]:
+# In[1]:
 
 
 def image_preprocessing(img_path):
@@ -37,7 +37,7 @@ def image_preprocessing(img_path):
 
 # #### Image Segmentation
 
-# In[ ]:
+# In[2]:
 
 
 def image_segmentation(img):
@@ -55,7 +55,7 @@ def image_segmentation(img):
 
 # ### Morphological Operations
 
-# In[ ]:
+# In[3]:
 
 
 def morphological_operations(img):
@@ -79,7 +79,7 @@ def morphological_operations(img):
 
 # ### Canny Edge Detection
 
-# In[ ]:
+# In[4]:
 
 
 def canny_edge_detection(img):
@@ -95,27 +95,53 @@ def canny_edge_detection(img):
 # In[ ]:
 
 
+def display_histogram(img_edges, img_gray):
+    # Initialize number of histogram bins
+    k = 64
+    bin_width = 256 // k
+
+    # Initialize histogram bins
+    histogram = np.zeros(k, dtype=np.int32)
+
+    # Loop over every edge pixel in Iedge
+    for i in range(edges.shape[0]):
+        for j in range(edges.shape[1]):
+            # Check if the pixel is an edge pixel
+            if edges[i, j] != 0:
+                # Find corresponding gray level intensity in Igray
+                intensity = gray[i, j]
+                # Determine the bin index for the intensity
+                bin_index = intensity // bin_width
+                # Increment the count of the corresponding bin
+                histogram[bin_index] += 1
+
+    # Plot the histogram
+    plt.bar(range(k), histogram)
+    plt.show()
+
+
+# In[5]:
+
+
 def preprocessing(images_paths):
     imgs_edges = []
-    imgs_gray = []
     for img in images_paths:
         resized, gray, norm = image_preprocessing(img)
         segmented_img = image_segmentation(resized)
         noise_removal = morphological_operations(segmented_img)
         edges = canny_edge_detection(noise_removal)
-        imgs_gray.append(gray)
         imgs_edges.append(edges)
-    return imgs_edges, imgs_gray
+    return imgs_edges
 
 
-# In[1]:
+# In[6]:
 
 
 def create_py():
     get_ipython().system('jupyter nbconvert --to script preprocessing_utils.ipynb')
 
 
-# In[2]:
+# In[7]:
 
 
 if __name__ == '__main__':

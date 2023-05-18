@@ -35,12 +35,12 @@ def hyperparamter_tuning_svm(train_features, train_labels, validation_features, 
     return clf.best_params_, accuracy
 
 
-# In[ ]:
+# In[1]:
 
 
 def SVC_Model(train_features, train_labels, validation_features, validation_labels, params):
     # Train the SVM model
-    svc_model = SVC(kernel=params['kernel'], gamma = params['gamma'], C=params['C'], decision_function_shape=params['decision_function_shape'])
+    svc_model = SVC(kernel='poly', gamma = 1.0, C=3, decision_function_shape='ovr')
     svc_model.fit(train_features, train_labels)
 
     # Predict the class labels on the test set
@@ -109,14 +109,14 @@ def classification(train_features, train_labels, validation_features, validation
     return accuracy
 
 
-# In[1]:
+# In[4]:
 
 
 def create_py():
     get_ipython().system('jupyter nbconvert --to script classification_utils.ipynb')
 
 
-# In[2]:
+# In[5]:
 
 
 if __name__ == '__main__':
