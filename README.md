@@ -42,7 +42,7 @@ toc: true
 
 ## 1.5. Performance Analysis Module:
 - Used confusion matrix to analyze the performance of the classifier.
-![Confusion Matrix](https://media.discordapp.net/attachments/1107081102687993907/1108467501714657330/image.png?width=652&height=651){ width=30%}
+![Confusion Matrix](https://media.discordapp.net/attachments/1107081102687993907/1108467501714657330/image.png?width=652&height=651)
 
 - Used classification report to analyze the performance of the classifier (best accuracy= 94.5%).
 
